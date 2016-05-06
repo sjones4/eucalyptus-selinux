@@ -28,8 +28,6 @@
 template(`eucalyptus_domain_template',`
 	gen_require(`
 		attribute eucalyptus_domain;
-		type eucalyptus_log_t;
-		type eucalyptus_var_run_t;
 	')
 
 	########################################
