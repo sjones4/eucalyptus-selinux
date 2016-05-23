@@ -160,6 +160,8 @@ sysnet_dns_name_resolve(eucalyptus_cloud_t)
 sysnet_read_config(eucalyptus_cloud_t)
 
 tunable_policy(`eucalyptus_storage_controller', `
+    corenet_tcp_connect_cyphesis_port(eucalyptus_cloud_t)  # port 6789, ceph-mon
+
     rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
 
     dev_list_all_dev_nodes(eucalyptus_cloud_t)
