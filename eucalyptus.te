@@ -99,12 +99,6 @@ allow eucalyptus_cloud_t self:udp_socket create_socket_perms;
 allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
 
 dontaudit eucalyptus_cloud_t self:capability fsetid;
-ifdef(`hide_broken_symptoms',`
-    dontaudit eucalyptus_cloud_t usr_t:dir setattr;  # https://eucalyptus.atlassian.net/browse/EUCA-12150
-    dontaudit eucalyptus_cloud_t usr_t:file setattr;  # https://eucalyptus.atlassian.net/browse/EUCA-12150
-    dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir { setattr write };  # https://eucalyptus.atlassian.net/browse/EUCA-12150
-    dontaudit eucalyptus_cloud_t eucalyptus_conf_t:file setattr;  # https://eucalyptus.atlassian.net/browse/EUCA-12150
-')
 
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
@@ -177,15 +171,6 @@ tunable_policy(`eucalyptus_storage_controller', `
     lvm_read_metadata(eucalyptus_cloud_t)  # dasmanager, mainly so audit2why yields results
 
     tgtd_stream_connect(eucalyptus_cloud_t)  # dasmanager, overlaymanager
-
-    # Get rid of all of these when EUCA-12069 is fixed
-    # https://eucalyptus.atlassian.net/browse/EUCA-12069
-    ps_process_pattern(eucalyptus_cloud_t, tgtd_t)
-    systemd_config_generic_services(eucalyptus_cloud_t)
-    ifdef(`hide_broken_symptoms',`
-        dontaudit eucalyptus_cloud_t syslogd_var_run_t:dir read;  # systemctl status tgtd.service
-        dontaudit eucalyptus_cloud_t syslogd_var_run_t:file read_file_perms;
-    ')
 ')
 
 optional_policy(`
@@ -210,7 +195,6 @@ allow eucalyptus_cluster_t self:tcp_socket create_stream_socket_perms;
 allow eucalyptus_cluster_t self:udp_socket create_socket_perms;
 
 dontaudit eucalyptus_cluster_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
-dontaudit eucalyptus_cluster_t fsadm_exec_t:file getattr;  # https://eucalyptus.atlassian.net/browse/EUCA-12148
 
 read_files_pattern(eucalyptus_cluster_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
@@ -312,11 +296,8 @@ files_pid_filetrans(eucalyptus_node_t, eucalyptus_var_run_t, file)
 # because libvirtd applies that label when it shuts VMs off.
 manage_lnk_files_pattern(eucalyptus_node_t, virt_image_t, virt_image_t)
 delete_files_pattern(eucalyptus_node_t, virt_image_t, var_lib_t)  # libvirtd console.log relabeling
-setattr_files_pattern(eucalyptus_node_t, virt_image_t, var_lib_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12085
 
 read_files_pattern(eucalyptus_node_t, dhcpd_state_t, dhcp_etc_t)  # Edge NC gates instance launches on dhcp config
-
-read_files_pattern(eucalyptus_node_t, eucalyptus_eucanetd_t, eucalyptus_eucanetd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12047
 
 
 kernel_read_network_state(eucalyptus_node_t)
@@ -350,7 +331,6 @@ sysnet_dns_name_resolve(eucalyptus_node_t)
 
 ifdef(`hide_broken_symptoms',`
     dontaudit eucalyptus_node_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
-    dontaudit eucalyptus_node_t mount_exec_t:file getattr;  # https://eucalyptus.atlassian.net/browse/EUCA-12080
 ')
 
 optional_policy(`
@@ -427,7 +407,6 @@ filetrans_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t, file, "euca-
 kernel_read_system_state(eucalyptus_eucanetd_t)
 
 corecmd_exec_bin(eucalyptus_eucanetd_t)
-corecmd_exec_shell(eucalyptus_eucanetd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12026
 
 corenet_udp_bind_generic_node(eucalyptus_eucanetd_t)
 corenet_udp_bind_generic_port(eucalyptus_eucanetd_t)
