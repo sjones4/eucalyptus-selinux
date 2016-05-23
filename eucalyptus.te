@@ -91,6 +91,7 @@ files_pid_file(eucalyptus_var_run_t)
 #
 
 allow eucalyptus_cloud_t self:capability { chown fowner kill net_raw setgid setuid sys_resource };
+allow eucalyptus_cloud_t self:capability { dac_override dac_read_search };  # log files written as root
 allow eucalyptus_cloud_t self:process { execmem setcap setpgid setrlimit };  # execmem is for java
 allow eucalyptus_cloud_t self:netlink_route_socket create_netlink_socket_perms;
 allow eucalyptus_cloud_t self:rawip_socket create_socket_perms;
@@ -159,8 +160,6 @@ sysnet_dns_name_resolve(eucalyptus_cloud_t)
 sysnet_read_config(eucalyptus_cloud_t)
 
 tunable_policy(`eucalyptus_storage_controller', `
-    allow eucalyptus_cloud_t self:capability { dac_override dac_read_search };  # for snapshots
-
     rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
 
     dev_list_all_dev_nodes(eucalyptus_cloud_t)
