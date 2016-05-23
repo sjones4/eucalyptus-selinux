@@ -429,6 +429,9 @@ kernel_read_system_state(eucalyptus_eucanetd_t)
 corecmd_exec_bin(eucalyptus_eucanetd_t)
 corecmd_exec_shell(eucalyptus_eucanetd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12026
 
+corenet_udp_bind_generic_node(eucalyptus_eucanetd_t)
+corenet_udp_bind_generic_port(eucalyptus_eucanetd_t)
+
 dev_read_sysfs(eucalyptus_eucanetd_t)
 
 sysnet_dns_name_resolve(eucalyptus_eucanetd_t)
