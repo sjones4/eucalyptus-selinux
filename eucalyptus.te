@@ -149,6 +149,8 @@ dev_read_sysfs(eucalyptus_cloud_t)  # /sys/device/system/cpu
 
 domain_use_interactive_fds(eucalyptus_cloud_t)  # get output from clcadmin-initialize-cloud
 
+files_dontaudit_write_root_dirs(eucalyptus_cloud_t)
+
 fs_getattr_tmpfs(eucalyptus_cloud_t)
 fs_getattr_xattr_fs(eucalyptus_cloud_t)
 
