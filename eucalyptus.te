@@ -18,6 +18,7 @@ policy_module(eucalyptus, 0.1.1)
 gen_require(`
     attribute fixed_disk_raw_read;
     attribute fixed_disk_raw_write;
+    type brctl_t;
     type device_t;
     type dhcp_etc_t;
     type dhcpd_state_t;
@@ -384,6 +385,7 @@ allow eucalyptus_eucanetd_t self:unix_stream_socket create_stream_socket_perms;
 ps_process_pattern(eucalyptus_eucanetd_t, dhcpd_t)
 
 ifdef(`hide_broken_symptoms',`
+    dontaudit brctl_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
     dontaudit dhcpd_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
     dontaudit ifconfig_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
     dontaudit iptables_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
@@ -423,6 +425,10 @@ dev_read_sysfs(eucalyptus_eucanetd_t)
 sysnet_dns_name_resolve(eucalyptus_eucanetd_t)
 
 auth_read_passwd(eucalyptus_eucanetd_t)
+
+optional_policy(`
+    brctl_domtrans(eucalyptus_eucanetd_t)  # managed mode
+')
 
 optional_policy(`
     allow eucalyptus_eucanetd_t dhcpd_t:process sigkill;
