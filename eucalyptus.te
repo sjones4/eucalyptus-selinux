@@ -29,6 +29,7 @@ gen_require(`
     type mount_exec_t;
     type netutils_t;
     type syslogd_var_run_t;
+    type systemd_systemctl_exec_t;
     type tgtd_t;
     type tmp_t;
     type usr_t;
@@ -101,6 +102,7 @@ allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
 
 dontaudit eucalyptus_cloud_t self:capability fsetid;
 dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir write;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
+dontaudit eucalyptus_cloud_t systemd_systemctl_exec_t:file execute;  # https://eucalyptus.atlassian.net/browse/EUCA-12392
 
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
