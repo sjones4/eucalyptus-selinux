@@ -27,6 +27,7 @@ gen_require(`
     type fsadm_exec_t;
     type ifconfig_t;
     type iptables_t;
+    type iscsid_t;
     type mount_exec_t;
     type netutils_t;
     type syslogd_var_run_t;
@@ -275,6 +276,10 @@ allow eucalyptus_node_t self:tcp_socket rw_stream_socket_perms;
 allow eucalyptus_node_t self:unix_stream_socket create_stream_socket_perms;
 
 ps_process_pattern(eucalyptus_node_t, eucalyptus_eucanetd_t)
+
+ifdef(`hide_broken_symptoms',`
+    dontaudit iscsid_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12393
+')
 
 list_dirs_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
