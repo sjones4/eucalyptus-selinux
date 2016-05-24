@@ -100,6 +100,7 @@ allow eucalyptus_cloud_t self:udp_socket create_socket_perms;
 allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
 
 dontaudit eucalyptus_cloud_t self:capability fsetid;
+dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir write;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
 
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
