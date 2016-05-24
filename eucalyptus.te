@@ -391,6 +391,8 @@ read_files_pattern(eucalyptus_eucanetd_t, eucalyptus_conf_t, eucalyptus_conf_t)
 manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_log_t, eucalyptus_log_t)
 logging_log_filetrans(eucalyptus_eucanetd_t, eucalyptus_log_t, { dir file lnk_file })
 
+read_files_pattern(eucalyptus_eucanetd_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
 manage_dirs_pattern(eucalyptus_eucanetd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)
 manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)
 files_pid_filetrans(eucalyptus_eucanetd_t, eucalyptus_var_run_t, file)
