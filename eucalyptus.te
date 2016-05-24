@@ -348,6 +348,10 @@ optional_policy(`
 ')
 
 optional_policy(`
+    brctl_domtrans(eucalyptus_node_t)  # managed mode
+')
+
+optional_policy(`
     fstools_domtrans(eucalyptus_node_t)  # blkid
 ')
 
