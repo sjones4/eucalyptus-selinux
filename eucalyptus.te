@@ -166,6 +166,12 @@ miscfiles_read_generic_certs(eucalyptus_cloud_t)  # /etc/pki/tls/openssl.cnf for
 sysnet_dns_name_resolve(eucalyptus_cloud_t)
 sysnet_read_config(eucalyptus_cloud_t)
 
+# /tmp/hsperfdata_root is explicitly labeled as user_tmp_t by the base
+# policy, so we can't just give it a transition to eucalyptus_tmp_t like
+# we can with other things.
+userdom_manage_user_tmp_dirs(eucalyptus_cloud_t)
+userdom_manage_user_tmp_files(eucalyptus_cloud_t)
+
 tunable_policy(`eucalyptus_storage_controller', `
     corenet_tcp_connect_cyphesis_port(eucalyptus_cloud_t)  # port 6789, ceph-mon
 

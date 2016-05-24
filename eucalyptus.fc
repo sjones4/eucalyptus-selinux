@@ -19,7 +19,6 @@
 /tmp/ebt_filter_file-.*                            -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /tmp/ebt_nat_file-.*                               -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /tmp/euca-global-net-.*                            -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
-/tmp/hsperfdata_root(/.*)?                         -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /tmp/ipt_file-.*                                   -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /usr/lib/eucalyptus/euca_mountwrap                 -- gen_context(system_u:object_r:bin_t,s0)
 /usr/lib/eucalyptus/euca_rootwrap                  -- gen_context(system_u:object_r:bin_t,s0)
