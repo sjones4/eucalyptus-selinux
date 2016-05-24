@@ -364,8 +364,7 @@ optional_policy(`
 ')
 
 optional_policy(`
-    udev_exec(eucalyptus_node_t)
-    udev_read_db(eucalyptus_node_t)  # use udevadm to obtain EBS volume /dev/disk/by-path/*
+    udev_domtrans(eucalyptus_node_t)  # use udevadm to obtain EBS volume /dev/disk/by-path/*
 ')
 
 optional_policy(`
