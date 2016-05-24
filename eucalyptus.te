@@ -377,6 +377,7 @@ optional_policy(`
 #
 
 allow eucalyptus_eucanetd_t self:capability { setgid setuid };
+allow eucalyptus_eucanetd_t self:capability net_admin;  # vconfig in managed mode
 allow eucalyptus_eucanetd_t self:capability { chown dac_override dac_read_search };  # https://eucalyptus.atlassian.net/browse/EUCA-12020
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
 allow eucalyptus_eucanetd_t self:fifo_file rw_fifo_file_perms;
@@ -413,6 +414,7 @@ manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t)
 filetrans_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t, file, "euca-dhcp.conf")
 
 
+kernel_read_network_state(eucalyptus_eucanetd_t)  # vconfig in managed mode
 kernel_read_system_state(eucalyptus_eucanetd_t)
 
 corecmd_exec_bin(eucalyptus_eucanetd_t)
