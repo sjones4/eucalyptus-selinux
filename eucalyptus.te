@@ -400,8 +400,7 @@ files_pid_filetrans(eucalyptus_eucanetd_t, eucalyptus_var_run_t, file)
 manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
 files_tmp_filetrans(eucalyptus_eucanetd_t, eucalyptus_tmp_t, file)
 
-read_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcpd_state_t)
-delete_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcpd_state_t)
+manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcpd_state_t)
 sysnet_dhcp_state_filetrans(eucalyptus_eucanetd_t, dhcpd_state_t, file)
 
 manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t)
