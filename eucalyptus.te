@@ -124,6 +124,7 @@ files_pid_filetrans(eucalyptus_cloud_t, eucalyptus_var_run_t, file)
 files_tmp_filetrans(eucalyptus_cloud_t, eucalyptus_tmp_t, { dir file })
 manage_files_pattern(eucalyptus_cloud_t, tmp_t, eucalyptus_tmp_t)
 manage_dirs_pattern(eucalyptus_cloud_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
+manage_files_pattern(eucalyptus_cloud_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
 
 manage_files_pattern(eucalyptus_cloud_t, tmpfs_t, eucalyptus_tmpfs_t)
 fs_tmpfs_filetrans(eucalyptus_cloud_t, eucalyptus_tmpfs_t, { dir file lnk_file sock_file fifo_file })
