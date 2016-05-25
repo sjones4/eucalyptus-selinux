@@ -24,17 +24,12 @@ gen_require(`
     type dhcpd_state_t;
     type dhcpd_t;
     type fixed_disk_device_t;
-    type fsadm_exec_t;
     type ifconfig_t;
     type iptables_t;
     type iscsid_t;
-    type mount_exec_t;
     type netutils_t;
-    type syslogd_var_run_t;
     type systemd_systemctl_exec_t;
-    type tgtd_t;
     type tmp_t;
-    type usr_t;
     type var_lib_t;
     type virt_image_t;
 ')
