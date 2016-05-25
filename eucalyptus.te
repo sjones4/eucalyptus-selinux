@@ -174,6 +174,8 @@ userdom_manage_user_tmp_dirs(eucalyptus_cloud_t)
 userdom_manage_user_tmp_files(eucalyptus_cloud_t)
 
 tunable_policy(`eucalyptus_storage_controller', `
+    can_exec(eucalyptus_cloud_t, eucalyptus_tmp_t)  # JNA wants to mmap a temp copy of librbd
+
     corenet_tcp_connect_cyphesis_port(eucalyptus_cloud_t)  # port 6789, ceph-mon
 
     rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
