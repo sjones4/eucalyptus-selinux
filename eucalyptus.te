@@ -86,6 +86,7 @@ files_pid_file(eucalyptus_var_run_t)
 
 allow eucalyptus_cloud_t self:capability { chown fowner kill net_raw setgid setuid sys_resource };
 allow eucalyptus_cloud_t self:capability { dac_override dac_read_search };  # log files written as root
+dontaudit eucalyptus_cloud_t self:capability fsetid;
 allow eucalyptus_cloud_t self:process { execmem setcap setpgid setrlimit };  # execmem is for java
 allow eucalyptus_cloud_t self:netlink_route_socket create_netlink_socket_perms;
 allow eucalyptus_cloud_t self:rawip_socket create_socket_perms;
@@ -93,12 +94,11 @@ allow eucalyptus_cloud_t self:tcp_socket create_stream_socket_perms;
 allow eucalyptus_cloud_t self:udp_socket create_socket_perms;
 allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
 
-dontaudit eucalyptus_cloud_t self:capability fsetid;
-dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir manage_dir_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
-dontaudit eucalyptus_cloud_t systemd_systemctl_exec_t:file execute;  # https://eucalyptus.atlassian.net/browse/EUCA-12392
-
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
+ifdef(`hide_broken_symptoms',`
+    dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir manage_dir_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
+')
 
 manage_files_pattern(eucalyptus_cloud_t, eucalyptus_log_t, eucalyptus_log_t)
 logging_log_filetrans(eucalyptus_cloud_t, eucalyptus_log_t, { dir file lnk_file })
@@ -164,6 +164,10 @@ sysnet_read_config(eucalyptus_cloud_t)
 userdom_manage_user_tmp_dirs(eucalyptus_cloud_t)
 userdom_manage_user_tmp_files(eucalyptus_cloud_t)
 
+ifdef(`hide_broken_symptoms',`
+    dontaudit eucalyptus_cloud_t systemd_systemctl_exec_t:file execute;  # https://eucalyptus.atlassian.net/browse/EUCA-12392
+')
+
 tunable_policy(`eucalyptus_storage_controller', `
     can_exec(eucalyptus_cloud_t, eucalyptus_tmp_t)  # JNA wants to mmap a temp copy of librbd
 
@@ -196,13 +200,13 @@ optional_policy(`
 
 allow eucalyptus_cluster_t self:capability { dac_override kill setgid setuid };
 allow eucalyptus_cluster_t self:process { getpgid setpgid };
+dontaudit eucalyptus_cluster_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
 allow eucalyptus_cluster_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_cluster_t self:netlink_route_socket create_netlink_socket_perms;
 allow eucalyptus_cluster_t self:sem create_sem_perms;
 allow eucalyptus_cluster_t self:tcp_socket create_stream_socket_perms;
 allow eucalyptus_cluster_t self:udp_socket create_socket_perms;
 
-dontaudit eucalyptus_cluster_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
 
 read_files_pattern(eucalyptus_cluster_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
@@ -266,8 +270,10 @@ optional_policy(`
 #
 
 allow eucalyptus_node_t self:capability { chown dac_override fowner setgid setuid };
-allow eucalyptus_node_t self:process setpgid;
 dontaudit eucalyptus_node_t self:capability fsetid;
+
+allow eucalyptus_node_t self:process setpgid;
+dontaudit eucalyptus_node_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
 
 allow eucalyptus_node_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_node_t self:msgq create_msgq_perms;  # /usr/bin/pv
@@ -336,10 +342,6 @@ libs_exec_ldconfig(eucalyptus_node_t)  # bundle-instance; no idea why
 miscfiles_read_localization(eucalyptus_node_t)
 
 sysnet_dns_name_resolve(eucalyptus_node_t)
-
-ifdef(`hide_broken_symptoms',`
-    dontaudit eucalyptus_node_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
-')
 
 optional_policy(`
     apache_exec(eucalyptus_node_t)
