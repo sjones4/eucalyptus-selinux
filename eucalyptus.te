@@ -18,16 +18,12 @@ policy_module(eucalyptus, 0.1.2)
 gen_require(`
     attribute fixed_disk_raw_read;
     attribute fixed_disk_raw_write;
-    type brctl_t;
     type device_t;
     type dhcp_etc_t;
     type dhcpd_state_t;
     type dhcpd_t;
     type fixed_disk_device_t;
-    type ifconfig_t;
     type iptables_t;
-    type iscsid_t;
-    type netutils_t;
     type systemd_systemctl_exec_t;
     type tmp_t;
     type var_lib_t;
@@ -281,10 +277,6 @@ allow eucalyptus_node_t self:unix_stream_socket create_stream_socket_perms;
 
 ps_process_pattern(eucalyptus_node_t, eucalyptus_eucanetd_t)
 
-ifdef(`hide_broken_symptoms',`
-    dontaudit iscsid_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12393
-')
-
 list_dirs_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
@@ -366,6 +358,7 @@ optional_policy(`
 
 optional_policy(`
     iscsid_domtrans(eucalyptus_node_t)  # connect to EBS
+    eucalyptus_dontaudit_leaks(iscsid_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 optional_policy(`
@@ -394,16 +387,6 @@ allow eucalyptus_eucanetd_t self:capability { chown dac_override dac_read_search
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
 allow eucalyptus_eucanetd_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_eucanetd_t self:unix_stream_socket create_stream_socket_perms;
-
-ps_process_pattern(eucalyptus_eucanetd_t, dhcpd_t)
-
-ifdef(`hide_broken_symptoms',`
-    dontaudit brctl_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
-    dontaudit dhcpd_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
-    dontaudit ifconfig_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
-    dontaudit iptables_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
-    dontaudit netutils_t eucalyptus_log_t:file read_file_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12084
-')
 
 read_files_pattern(eucalyptus_eucanetd_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
@@ -443,22 +426,29 @@ auth_read_passwd(eucalyptus_eucanetd_t)
 
 optional_policy(`
     brctl_domtrans(eucalyptus_eucanetd_t)  # managed mode
+    eucalyptus_dontaudit_leaks(brctl_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
     allow eucalyptus_eucanetd_t dhcpd_t:process sigkill;
+    ps_process_pattern(eucalyptus_eucanetd_t, dhcpd_t)
+
     dhcpd_domtrans(eucalyptus_eucanetd_t)
+    eucalyptus_dontaudit_leaks(dhcpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
     iptables_domtrans(eucalyptus_eucanetd_t)  # iptables, ebtables
+    eucalyptus_dontaudit_leaks(iptables_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
     read_files_pattern(iptables_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
 ')
 
 optional_policy(`
     netutils_domtrans(eucalyptus_eucanetd_t)  # arping
+    eucalyptus_dontaudit_leaks(netutils_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
     sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig
+    eucalyptus_dontaudit_leaks(ifconfig_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')

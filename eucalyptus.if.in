@@ -153,6 +153,25 @@ interface(`eucalyptus_manage_log',`
 
 ########################################
 ## <summary>
+##	Dontaudit reads and writes on leaked file descriptors.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`eucalyptus_dontaudit_leaks',`
+    gen_require(`
+        type eucalyptus_log_t;
+    ')
+
+    dontaudit $1 eucalyptus_log_t:file { read write };
+')
+
+########################################
+## <summary>
 ##	Search eucalyptus lib directories.
 ## </summary>
 ## <param name="domain">
