@@ -37,9 +37,9 @@ gen_require(`
 # Booleans
 
 ## <desc>
-##	<p>
-##	Allow eucalyptus to run as a storage controller
-##	</p>
+## <p>
+## Allow eucalyptus to run as a storage controller
+## </p>
 ## </desc>
 gen_tunable(eucalyptus_storage_controller, false)
 
