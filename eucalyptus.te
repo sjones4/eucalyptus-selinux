@@ -373,6 +373,11 @@ optional_policy(`
 ')
 
 optional_policy(`
+    gen_require(`
+        type virsh_t;
+        type virsh_exec_t;
+    ')
+    domtrans_pattern(eucalyptus_node_t, virsh_exec_t, virsh_t)  # connect_iscsitarget_main.pl for ceph
     virt_manage_config(eucalyptus_node_t)  # migration
     virt_manage_images(eucalyptus_node_t)
     virt_stream_connect(eucalyptus_node_t)
