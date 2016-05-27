@@ -21,7 +21,6 @@ gen_require(`
     type device_t;
     type dhcp_etc_t;
     type dhcpd_state_t;
-    type dhcpd_t;
     type fixed_disk_device_t;
     type iptables_t;
     type systemd_systemctl_exec_t;
