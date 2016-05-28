@@ -171,6 +171,8 @@ ifdef(`hide_broken_symptoms',`
 tunable_policy(`eucalyptus_storage_controller', `
     can_exec(eucalyptus_cloud_t, eucalyptus_tmp_t)  # JNA wants to mmap a temp copy of librbd
 
+    corenet_tcp_connect_ssh_port(eucalyptus_cloud_t)  # port 22, equallogic
+    corenet_tcp_connect_http_cache_port(eucalyptus_cloud_t)  # port 8080, 3par
     corenet_tcp_connect_cyphesis_port(eucalyptus_cloud_t)  # port 6789, ceph-mon
 
     rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
