@@ -434,6 +434,16 @@ sysnet_dns_name_resolve(eucalyptus_eucanetd_t)
 auth_read_passwd(eucalyptus_eucanetd_t)
 
 optional_policy(`
+    ps_process_pattern(eucalyptus_eucanetd_t, httpd_t)  # VPC metadata
+    create_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
+    delete_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
+    rw_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
+    apache_domtrans(eucalyptus_eucanetd_t)  # VPC metadata global process
+    apache_signal(eucalyptus_eucanetd_t)  # VPC metadata
+    eucalyptus_dontaudit_leaks(httpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
+')
+
+optional_policy(`
     brctl_domtrans(eucalyptus_eucanetd_t)  # managed mode
     eucalyptus_dontaudit_leaks(brctl_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
