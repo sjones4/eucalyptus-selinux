@@ -468,6 +468,11 @@ optional_policy(`
 ')
 
 optional_policy(`
+    gen_require(`
+        type ifconfig_t;
+        type ifconfig_var_run_t;
+    ')
+    allow ifconfig_t ifconfig_var_run_t:dir mounton;  # https://bugzilla.redhat.com/show_bug.cgi?id=1340572
     sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig
     eucalyptus_dontaudit_leaks(ifconfig_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
