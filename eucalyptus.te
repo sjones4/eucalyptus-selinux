@@ -477,6 +477,7 @@ optional_policy(`
         type ifconfig_var_run_t;
     ')
     allow ifconfig_t ifconfig_var_run_t:dir mounton;  # https://bugzilla.redhat.com/show_bug.cgi?id=1340572
-    sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig
+    kernel_unmount_proc(ifconfig_t)  # https://bugzilla.redhat.com/show_bug.cgi?id=1343776
+    sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig, ip
     eucalyptus_dontaudit_leaks(ifconfig_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
