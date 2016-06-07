@@ -181,10 +181,14 @@ tunable_policy(`eucalyptus_storage_controller', `
 
     fstools_domtrans(eucalyptus_cloud_t)  # overlaymanager
 
+    iscsid_domtrans(eucalyptus_cloud_t)
+
     lvm_domtrans(eucalyptus_cloud_t)  # dasmanager
     lvm_read_metadata(eucalyptus_cloud_t)  # dasmanager, mainly so audit2why yields results
 
     tgtd_stream_connect(eucalyptus_cloud_t)  # dasmanager, overlaymanager
+
+    udev_domtrans(eucalyptus_cloud_t)
 ')
 
 optional_policy(`
