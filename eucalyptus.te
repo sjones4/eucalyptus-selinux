@@ -192,6 +192,15 @@ tunable_policy(`eucalyptus_storage_controller', `
 ')
 
 optional_policy(`
+    # This happens at startup in VPCMIDO mode.  No one seems to know why.
+    gen_require(`
+        type unconfined_service_t;
+    ')
+
+    dontaudit eucalyptus_cloud_t unconfined_service_t:process signull;
+')
+
+optional_policy(`
     postgresql_exec(eucalyptus_cloud_t)
 ')
 
