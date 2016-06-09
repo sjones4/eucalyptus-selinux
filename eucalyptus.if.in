@@ -444,46 +444,46 @@ interface(`eucalyptus_systemctl',`
 ')
 
 ## TODO
-interface(`eucalyptus_admin',`
-    gen_require(`
-        type eucalyptus_cloud_t;
-        type eucalyptus_cluster_t;
-        type eucalyptus_node_t;
-        type eucalyptus_eucanetd_t;
-        type eucalyptus_conf_t;
-        type eucalyptus_log_t;
-        type eucalyptus_tmpfs_t;
-        type eucalyptus_tmp_t;
-        type eucalyptus_var_lib_t;
-        type eucalyptus_var_run_t;
-        type virt_image_t;
-    ')
-
-    allow $1 eucalyptus_domain:process signal_perms;
-    ps_process_pattern($1, eucalyptus_domain)
-
-    tunable_policy(`deny_ptrace',`',`
-        allow $1 eucalyptus_domain:process ptrace;
-    ')
-    files_search_etc($1)
-    admin_pattern($1, eucalyptus_conf_t)
-
-    logging_search_logs($1)
-    admin_pattern($1, eucalyptus_log_t)
-
-    files_list_tmp($1)
-    admin_pattern($1, eucalyptus_tmp_t)
-
-    fs_list_tmpfs($1)
-    admin_pattern($1, eucalyptus_tmpfs_t)
-
-    files_search_var_lib($1)
-    admin_pattern($1, eucalyptus_var_lib_t)
-
-    files_list_pids($1)
-    admin_pattern($1, eucalyptus_var_run_t)
-
-    eucalyptus_systemctl($1)
-    admin_pattern($1, eucalyptus_unit_file)
-    allow $1 eucalyptus_unit_file:service all_service_perms;
-')
+#interface(`eucalyptus_admin',`
+#    gen_require(`
+#        type eucalyptus_cloud_t;
+#        type eucalyptus_cluster_t;
+#        type eucalyptus_node_t;
+#        type eucalyptus_eucanetd_t;
+#        type eucalyptus_conf_t;
+#        type eucalyptus_log_t;
+#        type eucalyptus_tmpfs_t;
+#        type eucalyptus_tmp_t;
+#        type eucalyptus_var_lib_t;
+#        type eucalyptus_var_run_t;
+#        type virt_image_t;
+#    ')
+#
+#    allow $1 eucalyptus_domain:process signal_perms;
+#    ps_process_pattern($1, eucalyptus_domain)
+#
+#    tunable_policy(`deny_ptrace',`',`
+#        allow $1 eucalyptus_domain:process ptrace;
+#    ')
+#    files_search_etc($1)
+#    admin_pattern($1, eucalyptus_conf_t)
+#
+#    logging_search_logs($1)
+#    admin_pattern($1, eucalyptus_log_t)
+#
+#    files_list_tmp($1)
+#    admin_pattern($1, eucalyptus_tmp_t)
+#
+#    fs_list_tmpfs($1)
+#    admin_pattern($1, eucalyptus_tmpfs_t)
+#
+#    files_search_var_lib($1)
+#    admin_pattern($1, eucalyptus_var_lib_t)
+#
+#    files_list_pids($1)
+#    admin_pattern($1, eucalyptus_var_run_t)
+#
+#    eucalyptus_systemctl($1)
+#    admin_pattern($1, eucalyptus_unit_file)
+#    allow $1 eucalyptus_unit_file:service all_service_perms;
+#')
