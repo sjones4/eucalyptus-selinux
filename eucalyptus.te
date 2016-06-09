@@ -179,6 +179,7 @@ tunable_policy(`eucalyptus_storage_controller', `
     rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
 
     dev_list_all_dev_nodes(eucalyptus_cloud_t)
+    dev_rw_sysfs(eucalyptus_cloud_t)  # disconnect_iscsitarget_main.pl LUN deletion
 
     fstools_domtrans(eucalyptus_cloud_t)  # overlaymanager
 
