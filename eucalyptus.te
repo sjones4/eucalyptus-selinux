@@ -133,6 +133,7 @@ corenet_tcp_bind_generic_node(eucalyptus_cloud_t)
 corenet_tcp_bind_generic_port(eucalyptus_cloud_t)
 corenet_udp_bind_generic_node(eucalyptus_cloud_t)
 corenet_udp_bind_generic_port(eucalyptus_cloud_t)
+corenet_tcp_connect_echo_port(eucalyptus_cloud_t)  # InetAddress.isReachable falls back to this when ICMP doesn't work
 corenet_tcp_bind_dns_port(eucalyptus_cloud_t)
 corenet_udp_bind_dns_port(eucalyptus_cloud_t)
 corenet_tcp_connect_http_port(eucalyptus_cloud_t)  # for riak
