@@ -391,6 +391,7 @@ optional_policy(`
         type virsh_t;
         type virsh_exec_t;
     ')
+    read_files_pattern(virsh_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12432
     domtrans_pattern(eucalyptus_node_t, virsh_exec_t, virsh_t)  # connect_iscsitarget_main.pl for ceph
     virt_manage_config(eucalyptus_node_t)  # migration
     virt_manage_images(eucalyptus_node_t)
