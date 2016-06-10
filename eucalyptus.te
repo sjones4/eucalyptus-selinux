@@ -343,7 +343,7 @@ corenet_tcp_bind_generic_node(eucalyptus_node_t)
 corenet_tcp_bind_neutron_port(eucalyptus_node_t)  # port 8775
 
 dev_read_generic_blk_files(eucalyptus_node_t)  # bundle-instance
-dev_read_sysfs(eucalyptus_node_t)
+dev_rw_sysfs(eucalyptus_node_t)  # disconnect_iscsitarget_main.pl LUN deletion
 
 fs_getattr_tmpfs(eucalyptus_node_t)  # bundle-instance
 fs_getattr_xattr_fs(eucalyptus_node_t)
