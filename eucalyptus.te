@@ -369,6 +369,7 @@ optional_policy(`
 
 optional_policy(`
     brctl_domtrans(eucalyptus_node_t)  # managed mode
+    eucalyptus_dontaudit_leaks(brctl_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 optional_policy(`
@@ -377,7 +378,7 @@ optional_policy(`
 
 optional_policy(`
     iscsid_domtrans(eucalyptus_node_t)  # connect to EBS
-    #eucalyptus_dontaudit_leaks(iscsid_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
+    eucalyptus_dontaudit_leaks(iscsid_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 optional_policy(`
