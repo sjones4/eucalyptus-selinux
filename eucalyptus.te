@@ -286,10 +286,10 @@ optional_policy(`
 # eucalyptus_node local policy
 #
 
-allow eucalyptus_node_t self:capability { chown dac_override fowner setgid setuid };
+allow eucalyptus_node_t self:capability { chown dac_override fowner kill setgid setuid };
 dontaudit eucalyptus_node_t self:capability fsetid;
 
-allow eucalyptus_node_t self:process setpgid;
+allow eucalyptus_node_t self:process { getpgid setpgid };
 dontaudit eucalyptus_node_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
 
 allow eucalyptus_node_t self:fifo_file rw_fifo_file_perms;
