@@ -410,6 +410,7 @@ optional_policy(`
 
 allow eucalyptus_eucanetd_t self:capability { setgid setuid };
 allow eucalyptus_eucanetd_t self:capability net_admin;  # vconfig in managed mode
+allow eucalyptus_eucanetd_t self:capability sys_admin;  # nsenter in VPCMIDO mode
 #allow eucalyptus_eucanetd_t self:capability { chown dac_override dac_read_search };  # https://eucalyptus.atlassian.net/browse/EUCA-12020
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
 allow eucalyptus_eucanetd_t self:fifo_file rw_fifo_file_perms;
