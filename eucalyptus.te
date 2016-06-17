@@ -165,10 +165,6 @@ sysnet_read_config(eucalyptus_cloud_t)
 userdom_manage_user_tmp_dirs(eucalyptus_cloud_t)
 userdom_manage_user_tmp_files(eucalyptus_cloud_t)
 
-ifdef(`hide_broken_symptoms',`
-    #dontaudit eucalyptus_cloud_t systemd_systemctl_exec_t:file execute;  # https://eucalyptus.atlassian.net/browse/EUCA-12392
-')
-
 tunable_policy(`eucalyptus_storage_controller', `
     can_exec(eucalyptus_cloud_t, eucalyptus_tmp_t)  # JNA wants to mmap a temp copy of librbd
 
@@ -401,7 +397,7 @@ optional_policy(`
     virt_manage_images(eucalyptus_node_t)
     virt_stream_connect(eucalyptus_node_t)
     virt_systemctl(eucalyptus_node_t)  # migration
-    eucalyptus_dontaudit_leaks(virsh_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12431
+    eucalyptus_dontaudit_leaks(virsh_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 ########################################
@@ -412,7 +408,6 @@ optional_policy(`
 allow eucalyptus_eucanetd_t self:capability { setgid setuid };
 allow eucalyptus_eucanetd_t self:capability net_admin;  # vconfig in managed mode
 allow eucalyptus_eucanetd_t self:capability sys_admin;  # nsenter in VPCMIDO mode
-#allow eucalyptus_eucanetd_t self:capability { chown dac_override dac_read_search };  # https://eucalyptus.atlassian.net/browse/EUCA-12020
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
 allow eucalyptus_eucanetd_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_eucanetd_t self:unix_stream_socket create_stream_socket_perms;
