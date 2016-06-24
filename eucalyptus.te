@@ -38,7 +38,14 @@ gen_require(`
 
 ## <desc>
 ## <p>
-## Allow eucalyptus to run as a storage controller
+## Allow eucalyptus-node to run mkfs on paravirtual instances' disks.
+## </p>
+## </desc>
+gen_tunable(eucalyptus_run_mkfs, true)
+
+## <desc>
+## <p>
+## Allow eucalyptus-cloud to run as a storage controller
 ## </p>
 ## </desc>
 gen_tunable(eucalyptus_storage_controller, false)
@@ -51,6 +58,8 @@ attribute eucalyptus_unit_file;
 eucalyptus_domain_template(eucanetd)
 
 eucalyptus_domain_template(node)
+typeattribute eucalyptus_node_t fixed_disk_raw_read;  # for mkswap:  https://eucalyptus.atlassian.net/browse/EUCA-12492
+typeattribute eucalyptus_node_t fixed_disk_raw_write;  # for mkswap:  https://eucalyptus.atlassian.net/browse/EUCA-12492
 
 eucalyptus_domain_template(cluster)
 
@@ -359,6 +368,14 @@ libs_exec_ldconfig(eucalyptus_node_t)  # bundle-instance; no idea why
 miscfiles_read_localization(eucalyptus_node_t)
 
 sysnet_dns_name_resolve(eucalyptus_node_t)
+
+# https://eucalyptus.atlassian.net/browse/EUCA-12492
+tunable_policy(`eucalyptus_run_mkfs', `
+    rw_blk_files_pattern(eucalyptus_node_t, device_t, fixed_disk_device_t)
+
+    dev_list_all_dev_nodes(eucalyptus_node_t)
+')
+
 
 optional_policy(`
     apache_exec(eucalyptus_node_t)
