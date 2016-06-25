@@ -1,7 +1,7 @@
 %global selinux_variants mls targeted
 
 Name:           eucalyptus-selinux
-Version:        0.1.9
+Version:        0.1.10
 Release:        1%{?dist}
 Summary:        SELinux policy for eucalyptus
 
@@ -25,7 +25,7 @@ for eucalyptus.
 
 
 %prep
-%setup -q
+%autosetup
 
 
 %build
@@ -71,6 +71,9 @@ fi
 
 
 %changelog
+* Fri Jun 24 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.10-1
+- Version bump (0.1.10)
+
 * Thu Jun 16 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.9-1
 - Version bump (0.1.9)
 
