@@ -356,6 +356,7 @@ fs_getattr_tmpfs(eucalyptus_node_t)  # bundle-instance
 fs_getattr_xattr_fs(eucalyptus_node_t)
 fs_manage_tmpfs_sockets(eucalyptus_node_t)  # bundle-instance
 
+miscfiles_manage_generic_cert_dirs(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12485
 miscfiles_manage_generic_cert_files(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12496
 
 storage_raw_read_fixed_disk(eucalyptus_node_t)  # bundle-instance
