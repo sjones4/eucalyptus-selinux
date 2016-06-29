@@ -297,6 +297,9 @@ allow eucalyptus_node_t self:unix_stream_socket create_stream_socket_perms;
 
 ps_process_pattern(eucalyptus_node_t, eucalyptus_eucanetd_t)
 
+append_files_pattern(eucalyptus_node_t, etc_t, bin_t)  # https://bugzilla.redhat.com/show_bug.cgi?id=1351382
+append_files_pattern(eucalyptus_node_t, etc_t, etc_t)  # adding --listen in /etc/sysconfig/libvirtd
+
 list_dirs_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
