@@ -5,7 +5,7 @@ Version:        0.1.11
 Release:        1%{?dist}
 Summary:        SELinux policy for eucalyptus
 
-License:        GPLv3+
+License:        ISC
 URL:            https://github.com/eucalyptus/eucalyptus-selinux
 Source0:        %{name}-%{version}.tar.xz
 
@@ -73,6 +73,7 @@ fi
 %changelog
 * Tue Jun 28 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.11-1
 - Version bump (0.1.11)
+- Relicensed to ISC
 
 * Fri Jun 24 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.10-1
 - Version bump (0.1.10)
