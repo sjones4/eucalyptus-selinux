@@ -19,22 +19,14 @@ gen_require(`
     attribute fixed_disk_raw_read;
     attribute fixed_disk_raw_write;
     type device_t;
-    type dhcp_etc_t;
-    type dhcpd_state_t;
     type fixed_disk_device_t;
-    type iptables_t;
-    type systemd_systemctl_exec_t;
     type tmp_t;
-    type var_lib_t;
-    type virt_image_t;
 ')
 
 ########################################
 #
 # Declarations
 #
-
-# Booleans
 
 ## <desc>
 ## <p>
@@ -50,24 +42,20 @@ gen_tunable(eucalyptus_run_mkfs, true)
 ## </desc>
 gen_tunable(eucalyptus_storage_controller, false)
 
-# Process types
-
 attribute eucalyptus_domain;
 attribute eucalyptus_unit_file;
 
-eucalyptus_domain_template(eucanetd)
+eucalyptus_domain_template(cloud)
+typeattribute eucalyptus_cloud_t fixed_disk_raw_read;  # storage controller
+
+eucalyptus_domain_template(cluster)
+typeattribute eucalyptus_cloud_t fixed_disk_raw_write;  # storage controller
 
 eucalyptus_domain_template(node)
 typeattribute eucalyptus_node_t fixed_disk_raw_read;  # for mkswap:  https://eucalyptus.atlassian.net/browse/EUCA-12492
 typeattribute eucalyptus_node_t fixed_disk_raw_write;  # for mkswap:  https://eucalyptus.atlassian.net/browse/EUCA-12492
 
-eucalyptus_domain_template(cluster)
-
-eucalyptus_domain_template(cloud)
-typeattribute eucalyptus_cloud_t fixed_disk_raw_read;  # storage controller
-typeattribute eucalyptus_cloud_t fixed_disk_raw_write;  # storage controller
-
-# File types
+eucalyptus_domain_template(eucanetd)
 
 type eucalyptus_conf_t;
 files_config_file(eucalyptus_conf_t)
@@ -95,7 +83,9 @@ files_pid_file(eucalyptus_var_run_t)
 allow eucalyptus_cloud_t self:capability { chown fowner kill net_raw setgid setuid sys_resource };
 allow eucalyptus_cloud_t self:capability { dac_override dac_read_search };  # log files written as root
 dontaudit eucalyptus_cloud_t self:capability fsetid;
+
 allow eucalyptus_cloud_t self:process { execmem setcap setpgid setrlimit };  # execmem is for java
+
 allow eucalyptus_cloud_t self:netlink_route_socket create_netlink_socket_perms;
 allow eucalyptus_cloud_t self:rawip_socket create_socket_perms;
 allow eucalyptus_cloud_t self:tcp_socket create_stream_socket_perms;
@@ -104,9 +94,6 @@ allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
 
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
-ifdef(`hide_broken_symptoms',`
-    dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir manage_dir_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
-')
 
 manage_files_pattern(eucalyptus_cloud_t, eucalyptus_log_t, eucalyptus_log_t)
 logging_log_filetrans(eucalyptus_cloud_t, eucalyptus_log_t, { dir file lnk_file })
@@ -127,7 +114,6 @@ manage_files_pattern(eucalyptus_cloud_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
 
 manage_files_pattern(eucalyptus_cloud_t, tmpfs_t, eucalyptus_tmpfs_t)
 fs_tmpfs_filetrans(eucalyptus_cloud_t, eucalyptus_tmpfs_t, { dir file lnk_file sock_file fifo_file })
-
 
 kernel_read_network_state(eucalyptus_cloud_t)  # /proc/net/if_inet6
 kernel_read_system_state(eucalyptus_cloud_t)
@@ -165,6 +151,7 @@ auth_read_passwd(eucalyptus_cloud_t)
 
 miscfiles_read_generic_certs(eucalyptus_cloud_t)  # /etc/pki/tls/openssl.cnf for postgres
 
+sysnet_domtrans_ifconfig(eucalyptus_cloud_t)  # Internets.java uses /sbin/ip to find the default route
 sysnet_dns_name_resolve(eucalyptus_cloud_t)
 sysnet_read_config(eucalyptus_cloud_t)
 
@@ -174,45 +161,53 @@ sysnet_read_config(eucalyptus_cloud_t)
 userdom_manage_user_tmp_dirs(eucalyptus_cloud_t)
 userdom_manage_user_tmp_files(eucalyptus_cloud_t)
 
+ifdef(`hide_broken_symptoms',`
+    dontaudit eucalyptus_cloud_t eucalyptus_conf_t:dir manage_dir_perms;  # https://eucalyptus.atlassian.net/browse/EUCA-12391
+')
+
 tunable_policy(`eucalyptus_storage_controller', `
     can_exec(eucalyptus_cloud_t, eucalyptus_tmp_t)  # JNA wants to mmap a temp copy of librbd
+
+    rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
 
     corenet_tcp_connect_ssh_port(eucalyptus_cloud_t)  # port 22, equallogic
     corenet_tcp_connect_http_cache_port(eucalyptus_cloud_t)  # port 8080, 3par
     corenet_tcp_connect_cyphesis_port(eucalyptus_cloud_t)  # port 6789, ceph-mon
-
-    rw_blk_files_pattern(eucalyptus_cloud_t, device_t, fixed_disk_device_t)
 
     dev_list_all_dev_nodes(eucalyptus_cloud_t)
     dev_rw_sysfs(eucalyptus_cloud_t)  # disconnect_iscsitarget_main.pl LUN deletion
 
     fstools_domtrans(eucalyptus_cloud_t)  # overlaymanager
 
-    iscsid_domtrans(eucalyptus_cloud_t)
-
     lvm_domtrans(eucalyptus_cloud_t)  # dasmanager
     lvm_read_metadata(eucalyptus_cloud_t)  # dasmanager, mainly so audit2why yields results
-
-    tgtd_stream_connect(eucalyptus_cloud_t)  # dasmanager, overlaymanager
 
     udev_domtrans(eucalyptus_cloud_t)
 ')
 
 optional_policy(`
-    # This happens at startup in VPCMIDO mode.  No one seems to know why.
+    tunable_policy(`eucalyptus_storage_controller', `
+        iscsid_domtrans(eucalyptus_cloud_t)
+    ')
+')
+
+optional_policy(`
+    tunable_policy(`eucalyptus_storage_controller', `
+        tgtd_stream_connect(eucalyptus_cloud_t)  # dasmanager, overlaymanager
+    ')
+')
+
+optional_policy(`
     gen_require(`
         type unconfined_service_t;
     ')
 
+    # This happens at startup in VPCMIDO mode.  No one seems to know why.
     dontaudit eucalyptus_cloud_t unconfined_service_t:process signull;
 ')
 
 optional_policy(`
     postgresql_exec(eucalyptus_cloud_t)
-')
-
-optional_policy(`
-    sysnet_domtrans_ifconfig(eucalyptus_cloud_t)  # Internets.java uses /sbin/ip to find the default route
 ')
 
 ########################################
@@ -221,14 +216,15 @@ optional_policy(`
 #
 
 allow eucalyptus_cluster_t self:capability { dac_override kill setgid setuid };
+
 allow eucalyptus_cluster_t self:process { getpgid setpgid };
 dontaudit eucalyptus_cluster_t self:process setfscreate;  # sed wants to unnecessarily relabel httpd.conf
+
 allow eucalyptus_cluster_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_cluster_t self:netlink_route_socket create_netlink_socket_perms;
 allow eucalyptus_cluster_t self:sem create_sem_perms;
 allow eucalyptus_cluster_t self:tcp_socket create_stream_socket_perms;
 allow eucalyptus_cluster_t self:udp_socket create_socket_perms;
-
 
 read_files_pattern(eucalyptus_cluster_t, eucalyptus_conf_t, eucalyptus_conf_t)
 
@@ -248,7 +244,6 @@ files_tmp_filetrans(eucalyptus_cluster_t, eucalyptus_tmp_t, file)
 
 manage_files_pattern(eucalyptus_cluster_t, tmpfs_t, eucalyptus_tmpfs_t)
 fs_tmpfs_filetrans(eucalyptus_cluster_t, eucalyptus_tmpfs_t, file)
-
 
 kernel_read_network_state(eucalyptus_cluster_t)  # /proc/net/arp
 kernel_read_system_state(eucalyptus_cluster_t)
@@ -271,6 +266,8 @@ auth_read_passwd(eucalyptus_cluster_t)
 
 miscfiles_read_localization(eucalyptus_cluster_t)
 
+sysnet_domtrans_ifconfig(eucalyptus_cluster_t)
+
 optional_policy(`
     apache_exec(eucalyptus_cluster_t)
     apache_exec_modules(eucalyptus_cluster_t)
@@ -280,10 +277,6 @@ optional_policy(`
 
 optional_policy(`
     iptables_domtrans(eucalyptus_cluster_t)  # sensors, managed mode
-')
-
-optional_policy(`
-    sysnet_domtrans_ifconfig(eucalyptus_cluster_t)
 ')
 
 ########################################
@@ -315,7 +308,6 @@ manage_dirs_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, eucalyptus_var_lib_
 manage_files_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
 manage_lnk_files_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
 files_var_lib_filetrans(eucalyptus_node_t, eucalyptus_var_lib_t, { dir file lnk_file sock_file })
-filetrans_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, virt_image_t, dir, "instances")
 
 manage_dirs_pattern(eucalyptus_node_t, tmp_t, eucalyptus_tmp_t)
 manage_files_pattern(eucalyptus_node_t, tmp_t, eucalyptus_tmp_t)
@@ -327,14 +319,6 @@ fs_tmpfs_filetrans(eucalyptus_node_t, eucalyptus_tmpfs_t, file)
 manage_dirs_pattern(eucalyptus_node_t, eucalyptus_var_run_t, eucalyptus_var_run_t)
 manage_files_pattern(eucalyptus_node_t, eucalyptus_var_run_t, eucalyptus_var_run_t)
 files_pid_filetrans(eucalyptus_node_t, eucalyptus_var_run_t, file)
-
-# We (basically) need to use virt_image_t rather than our own type
-# because libvirtd applies that label when it shuts VMs off.
-manage_lnk_files_pattern(eucalyptus_node_t, virt_image_t, virt_image_t)
-delete_files_pattern(eucalyptus_node_t, virt_image_t, var_lib_t)  # libvirtd console.log relabeling
-
-read_files_pattern(eucalyptus_node_t, dhcpd_state_t, dhcp_etc_t)  # Edge NC gates instance launches on dhcp config
-
 
 kernel_read_network_state(eucalyptus_node_t)
 kernel_read_system_state(eucalyptus_node_t)
@@ -356,19 +340,24 @@ fs_getattr_tmpfs(eucalyptus_node_t)  # bundle-instance
 fs_getattr_xattr_fs(eucalyptus_node_t)
 fs_manage_tmpfs_sockets(eucalyptus_node_t)  # bundle-instance
 
-miscfiles_manage_generic_cert_dirs(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12485
-miscfiles_manage_generic_cert_files(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12496
-
 storage_raw_read_fixed_disk(eucalyptus_node_t)  # bundle-instance
 storage_setattr_fixed_disk_dev(eucalyptus_node_t)  # bundle-instance
 
 auth_read_passwd(eucalyptus_node_t)
 
+fstools_domtrans(eucalyptus_node_t)  # blkid
+
 libs_exec_ldconfig(eucalyptus_node_t)  # bundle-instance; no idea why
 
+lvm_domtrans(eucalyptus_node_t)
+
+miscfiles_manage_generic_cert_dirs(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12485
+miscfiles_manage_generic_cert_files(eucalyptus_node_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12496
 miscfiles_read_localization(eucalyptus_node_t)
 
 sysnet_dns_name_resolve(eucalyptus_node_t)
+
+udev_domtrans(eucalyptus_node_t)  # use udevadm to obtain EBS volume /dev/disk/by-path/*
 
 # https://eucalyptus.atlassian.net/browse/EUCA-12492
 tunable_policy(`eucalyptus_run_mkfs', `
@@ -376,7 +365,6 @@ tunable_policy(`eucalyptus_run_mkfs', `
 
     dev_list_all_dev_nodes(eucalyptus_node_t)
 ')
-
 
 optional_policy(`
     apache_exec(eucalyptus_node_t)
@@ -387,38 +375,50 @@ optional_policy(`
 
 optional_policy(`
     brctl_domtrans(eucalyptus_node_t)  # managed mode
+
     eucalyptus_dontaudit_leaks(brctl_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 optional_policy(`
-    fstools_domtrans(eucalyptus_node_t)  # blkid
-')
-
-optional_policy(`
-    iscsid_domtrans(eucalyptus_node_t)  # connect to EBS
-    eucalyptus_dontaudit_leaks(iscsid_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
-')
-
-optional_policy(`
-    lvm_domtrans(eucalyptus_node_t)
-')
-
-optional_policy(`
-    udev_domtrans(eucalyptus_node_t)  # use udevadm to obtain EBS volume /dev/disk/by-path/*
-')
-
-optional_policy(`
     gen_require(`
+        type dhcp_etc_t;
+        type dhcpd_state_t;
+    ')
+
+    read_files_pattern(eucalyptus_node_t, dhcpd_state_t, dhcp_etc_t)  # Edge NC gates instance launches on dhcp config
+')
+
+optional_policy(`
+    eucalyptus_dontaudit_leaks(iscsid_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
+
+    iscsid_domtrans(eucalyptus_node_t)  # connect to EBS
+')
+
+optional_policy(`
+    # We more or less have to use virt_image_t rather than our own type
+    # because libvirtd applies that label when it shuts VMs off.
+    # See /etc/selinux/*/contexts/virtual_image_context.
+    gen_require(`
+        type var_lib_t;
         type virsh_t;
         type virsh_exec_t;
+        type virt_image_t;
     ')
+
+    delete_files_pattern(eucalyptus_node_t, virt_image_t, var_lib_t)  # libvirtd console.log relabeling
+    manage_lnk_files_pattern(eucalyptus_node_t, virt_image_t, virt_image_t)
+
+    filetrans_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, virt_image_t, dir, "instances")
     read_files_pattern(virsh_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12432
+
     domtrans_pattern(eucalyptus_node_t, virsh_exec_t, virsh_t)  # connect_iscsitarget_main.pl for ceph
+
+    eucalyptus_dontaudit_leaks(virsh_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
+
     virt_manage_config(eucalyptus_node_t)  # migration
     virt_manage_images(eucalyptus_node_t)
     virt_stream_connect(eucalyptus_node_t)
     virt_systemctl(eucalyptus_node_t)  # migration
-    eucalyptus_dontaudit_leaks(virsh_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
 ')
 
 ########################################
@@ -429,7 +429,9 @@ optional_policy(`
 allow eucalyptus_eucanetd_t self:capability { setgid setuid };
 allow eucalyptus_eucanetd_t self:capability net_admin;  # vconfig in managed mode
 allow eucalyptus_eucanetd_t self:capability sys_admin;  # nsenter in VPCMIDO mode
+
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
+
 allow eucalyptus_eucanetd_t self:fifo_file rw_fifo_file_perms;
 allow eucalyptus_eucanetd_t self:unix_stream_socket create_stream_socket_perms;
 
@@ -445,14 +447,7 @@ manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_var_run_t, eucalyptus_var
 files_pid_filetrans(eucalyptus_eucanetd_t, eucalyptus_var_run_t, file)
 
 manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
-files_tmp_filetrans(eucalyptus_eucanetd_t, eucalyptus_tmp_t, file)
-
-manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcpd_state_t)
-sysnet_dhcp_state_filetrans(eucalyptus_eucanetd_t, dhcpd_state_t, file)
-
-manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t)
-filetrans_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t, file, "euca-dhcp.conf")
-
+files_tmp_filetrans(eucalyptus_eucanetd_t, eucalyptus_tmp_t, { dir file })
 
 kernel_read_network_state(eucalyptus_eucanetd_t)  # vconfig in managed mode
 kernel_read_system_state(eucalyptus_eucanetd_t)
@@ -465,42 +460,66 @@ corenet_tcp_connect_http_cache_port(eucalyptus_eucanetd_t)  # port 8080, midonet
 
 dev_read_sysfs(eucalyptus_eucanetd_t)
 
-sysnet_dns_name_resolve(eucalyptus_eucanetd_t)
-
 auth_read_passwd(eucalyptus_eucanetd_t)
+
+sysnet_dns_name_resolve(eucalyptus_eucanetd_t)
 
 optional_policy(`
     ps_process_pattern(eucalyptus_eucanetd_t, httpd_t)  # VPC metadata
+
     create_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
     delete_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
     rw_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
+
     apache_domtrans(eucalyptus_eucanetd_t)  # VPC metadata global process
     apache_signal(eucalyptus_eucanetd_t)  # VPC metadata
+
     eucalyptus_dontaudit_leaks(httpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
     brctl_domtrans(eucalyptus_eucanetd_t)  # managed mode
+
     eucalyptus_dontaudit_leaks(brctl_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
+    gen_require(`
+        type dhcp_etc_t;
+        type dhcpd_state_t;
+    ')
+
     allow eucalyptus_eucanetd_t dhcpd_t:process sigkill;
+
     ps_process_pattern(eucalyptus_eucanetd_t, dhcpd_t)
 
+    manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcpd_state_t)
+    sysnet_dhcp_state_filetrans(eucalyptus_eucanetd_t, dhcpd_state_t, file)
+
+    manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t)
+    filetrans_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t, file, "euca-dhcp.conf")
+
     dhcpd_domtrans(eucalyptus_eucanetd_t)
+
     eucalyptus_dontaudit_leaks(dhcpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
 
 optional_policy(`
-    iptables_domtrans(eucalyptus_eucanetd_t)  # iptables, ebtables
-    eucalyptus_dontaudit_leaks(iptables_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
+    gen_require(`
+        type iptables_t;
+    ')
+
     read_files_pattern(iptables_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
+
+    eucalyptus_dontaudit_leaks(iptables_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
+
+    iptables_domtrans(eucalyptus_eucanetd_t)  # iptables, ebtables
 ')
 
 optional_policy(`
-    netutils_domtrans(eucalyptus_eucanetd_t)  # arping
     eucalyptus_dontaudit_leaks(netutils_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
+
+    netutils_domtrans(eucalyptus_eucanetd_t)  # arping
 ')
 
 optional_policy(`
@@ -508,8 +527,12 @@ optional_policy(`
         type ifconfig_t;
         type ifconfig_var_run_t;
     ')
+
     allow ifconfig_t ifconfig_var_run_t:dir mounton;  # https://bugzilla.redhat.com/show_bug.cgi?id=1340572
+
     kernel_unmount_proc(ifconfig_t)  # https://bugzilla.redhat.com/show_bug.cgi?id=1343776
+
     sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig, ip
+
     eucalyptus_dontaudit_leaks(ifconfig_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')

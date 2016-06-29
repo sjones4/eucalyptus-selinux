@@ -26,26 +26,75 @@
 ## </param>
 #
 template(`eucalyptus_domain_template',`
-	gen_require(`
-		attribute eucalyptus_domain;
-	')
+    gen_require(`
+        attribute eucalyptus_domain;
+    ')
 
-	########################################
-	#
-	# Declarations
-	#
+    ########################################
+    #
+    # Declarations
+    #
 
-	type eucalyptus_$1_t, eucalyptus_domain;
-	type eucalyptus_$1_exec_t;
-	init_daemon_domain(eucalyptus_$1_t, eucalyptus_$1_exec_t)
+    type eucalyptus_$1_t, eucalyptus_domain;
+    type eucalyptus_$1_exec_t;
+    init_daemon_domain(eucalyptus_$1_t, eucalyptus_$1_exec_t)
 
-	type eucalyptus_$1_unit_file_t, eucalyptus_unit_file;
-	systemd_unit_file(eucalyptus_$1_unit_file_t)
+    type eucalyptus_$1_unit_file_t, eucalyptus_unit_file;
+    systemd_unit_file(eucalyptus_$1_unit_file_t)
+')
 
-	########################################
-	#
-	# Local policy
-	#
+########################################
+## <summary>
+##	Send generic signals to all eucalyptus processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_signal',`
+    gen_require(`
+        attribute eucalyptus_domain;
+    ')
+
+    allow $1 eucalyptus_domain:process signal;
+')
+
+########################################
+## <summary>
+##	Send a null signal to all eucalyptus processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_signull',`
+    gen_require(`
+        attribute eucalyptus_domain;
+    ')
+
+    allow $1 eucalyptus_domain:process signull;
+')
+
+########################################
+## <summary>
+##	Send SIGKILL to all eucalyptus processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_kill',`
+    gen_require(`
+        attribute eucalyptus_domain;
+    ')
+
+    allow $1 eucalyptus_domain:process sigkill;
 ')
 
 ########################################
@@ -63,10 +112,10 @@ interface(`eucalyptus_read_config',`
         type eucalyptus_conf_t;
     ')
 
-    files_search_etc($1)
-    list_dirs_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
     read_files_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
     read_lnk_files_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
+
+    files_search_etc($1)
 ')
 
 ########################################
@@ -84,10 +133,11 @@ interface(`eucalyptus_manage_config',`
         type eucalyptus_conf_t;
     ')
 
-    files_search_etc($1)
     manage_dirs_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
     manage_files_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
     manage_lnk_files_pattern($1, eucalyptus_conf_t, eucalyptus_conf_t)
+
+    files_search_etc($1)
 ')
 
 ########################################
@@ -99,15 +149,15 @@ interface(`eucalyptus_manage_config',`
 ##	Domain allowed access.
 ##	</summary>
 ## </param>
-## <rolecap/>
 #
 interface(`eucalyptus_read_log',`
     gen_require(`
         type eucalyptus_log_t;
     ')
 
-    logging_search_logs($1)
     read_files_pattern($1, eucalyptus_log_t, eucalyptus_log_t)
+
+    logging_search_logs($1)
 ')
 
 ########################################
@@ -125,8 +175,9 @@ interface(`eucalyptus_append_log',`
         type eucalyptus_log_t;
     ')
 
-    logging_search_logs($1)
     append_files_pattern($1, eucalyptus_log_t, eucalyptus_log_t)
+
+    logging_search_logs($1)
 ')
 
 ########################################
@@ -138,168 +189,17 @@ interface(`eucalyptus_append_log',`
 ##	Domain allowed access.
 ##	</summary>
 ## </param>
-## <rolecap/>
 #
 interface(`eucalyptus_manage_log',`
     gen_require(`
         type eucalyptus_log_t;
     ')
 
-    logging_search_logs($1)
     manage_dirs_pattern($1, eucalyptus_log_t, eucalyptus_log_t)
     manage_files_pattern($1, eucalyptus_log_t, eucalyptus_log_t)
     manage_lnk_files_pattern($1, eucalyptus_log_t, eucalyptus_log_t)
-')
 
-########################################
-## <summary>
-##	Dontaudit reads and writes on leaked file descriptors.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain to not audit.
-##	</summary>
-## </param>
-## <rolecap/>
-#
-interface(`eucalyptus_dontaudit_leaks',`
-    gen_require(`
-        type eucalyptus_log_t;
-    ')
-
-    dontaudit $1 eucalyptus_log_t:file { read write };
-')
-
-########################################
-## <summary>
-##	Search eucalyptus lib directories.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain allowed access.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_search_lib',`
-    gen_require(`
-        type eucalyptus_var_lib_t;
-    ')
-
-    allow $1 eucalyptus_var_lib_t:dir search_dir_perms;
-    files_search_var_lib($1)
-')
-
-########################################
-## <summary>
-##	Read eucalyptus lib files.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain allowed access.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_read_lib_files',`
-    gen_require(`
-        type eucalyptus_var_lib_t;
-    ')
-
-    files_search_var_lib($1)
-    read_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
-')
-
-########################################
-## <summary>
-##	Manage eucalyptus lib files.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain allowed access.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_manage_lib_files',`
-    gen_require(`
-        type eucalyptus_var_lib_t;
-    ')
-
-    files_search_var_lib($1)
-    manage_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
-')
-
-########################################
-## <summary>
-##	Manage eucalyptus lib directories.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain allowed access.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_manage_lib_dirs',`
-    gen_require(`
-        type eucalyptus_var_lib_t;
-    ')
-
-    files_search_var_lib($1)
-    manage_dirs_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
-')
-
-########################################
-## <summary>
-##  Manage eucalyptus sock_files files.
-## </summary>
-## <param name="domain">
-##  <summary>
-##  Domain allowed access.
-##  </summary>
-## </param>
-#
-interface(`eucalyptus_manage_lib_sock_files',`
-    gen_require(`
-        type eucalyptus_var_lib_t;
-    ')
-    files_search_var_lib($1)
-    manage_sock_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
-')
-
-########################################
-## <summary>
-##	Read eucalyptus PID files.
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain allowed access.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_read_pid_files',`
-    gen_require(`
-        type eucalyptus_var_run_t;
-    ')
-
-    files_search_pids($1)
-    read_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
-')
-
-########################################
-## <summary>
-##	Do not audit attempts to read
-##	eucalyptus tmp files
-## </summary>
-## <param name="domain">
-##	<summary>
-##	Domain to not audit.
-##	</summary>
-## </param>
-#
-interface(`eucalyptus_dontaudit_read_tmp_files',`
-    gen_require(`
-        type eucalyptus_tmp_t;
-    ')
-
-    dontaudit $1 eucalyptus_tmp_t:file read_file_perms;
+    logging_search_logs($1)
 ')
 
 ########################################
@@ -323,6 +223,25 @@ interface(`eucalyptus_read_tmp_files',`
 
 ########################################
 ## <summary>
+##	Do not audit attempts to read
+##	eucalyptus tmp files
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_dontaudit_read_tmp_files',`
+    gen_require(`
+        type eucalyptus_tmp_t;
+    ')
+
+    dontaudit $1 eucalyptus_tmp_t:file read_file_perms;
+')
+
+########################################
+## <summary>
 ##	Manage eucalyptus tmp files
 ## </summary>
 ## <param name="domain">
@@ -331,7 +250,7 @@ interface(`eucalyptus_read_tmp_files',`
 ##	</summary>
 ## </param>
 #
-interface(`eucalyptus_manage_tmp',`
+interface(`eucalyptus_manage_tmp_files',`
     gen_require(`
         type eucalyptus_tmp_t;
     ')
@@ -344,31 +263,12 @@ interface(`eucalyptus_manage_tmp',`
 
 ######################################
 ## <summary>
-##	Do not audit attempts to read
-##	eucalyptus tmpfs files.
+##	Read eucalyptus tmpfs files.
 ## </summary>
 ## <param name="domain">
 ##	<summary>
 ##	Domain allowed access.
 ##	</summary>
-## </param>
-#
-interface(`eucalyptus_dontaudit_read_tmpfs_files',`
-    gen_require(`
-        type eucalyptus_tmpfs_t;
-    ')
-
-    dontaudit $1 eucalyptus_tmpfs_t:file read_file_perms;
-')
-
-######################################
-## <summary>
-##  Read eucalyptus tmpfs files.
-## </summary>
-## <param name="domain">
-##  <summary>
-##  Domain allowed access.
-##  </summary>
 ## </param>
 #
 interface(`eucalyptus_read_tmpfs_files',`
@@ -382,12 +282,12 @@ interface(`eucalyptus_read_tmpfs_files',`
 
 ######################################
 ## <summary>
-##  Read/write eucalyptus tmpfs files.
+##	Read/write eucalyptus tmpfs files.
 ## </summary>
 ## <param name="domain">
-##  <summary>
-##  Domain allowed access.
-##  </summary>
+##	<summary>
+##	Domain allowed access.
+##	</summary>
 ## </param>
 #
 interface(`eucalyptus_rw_tmpfs_files',`
@@ -420,6 +320,246 @@ interface(`eucalyptus_manage_tmpfs_files',`
 
 ########################################
 ## <summary>
+##	Manage eucalyptus /var/lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_manage_var_lib_dirs',`
+    gen_require(`
+        type eucalyptus_var_lib_t;
+    ')
+
+    manage_dirs_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
+    files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Read eucalyptus /var/lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_read_var_lib_files',`
+    gen_require(`
+        type eucalyptus_var_lib_t;
+    ')
+
+    read_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
+    files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Manage eucalyptus /var/lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_manage_var_lib_files',`
+    gen_require(`
+        type eucalyptus_var_lib_t;
+    ')
+
+    manage_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
+    files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Manage eucalyptus sock_files files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_manage_var_lib_sock_files',`
+    gen_require(`
+        type eucalyptus_var_lib_t;
+    ')
+
+    manage_sock_files_pattern($1, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
+    files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Create eucalyptus /var/run directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_create_pid_dirs',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    allow $1 eucalyptus_var_run_t:dir create_dir_perms;
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Manage eucalyptus /var/run directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_manage_pid_dirs',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    manage_dirs_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Read eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_read_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    read_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Write eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_write_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    write_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Read/write eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_rw_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    rw_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Create eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_create_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    create_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Delete eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_delete_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    delete_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
+##	Manage eucalyptus /var/run files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_manage_pid_files',`
+    gen_require(`
+        type eucalyptus_var_run_t;
+    ')
+
+    manage_files_pattern($1, eucalyptus_var_run_t, eucalyptus_var_run_t)
+
+    files_search_pids($1)
+')
+
+########################################
+## <summary>
 ##	Execute all eucalyptus services in their respective domains.
 ## </summary>
 ## <param name="domain">
@@ -434,56 +574,90 @@ interface(`eucalyptus_systemctl',`
         attribute eucalyptus_unit_file;
     ')
 
-    systemd_exec_systemctl($1)
-    init_reload_services($1)
-    systemd_search_unit_dirs($1)
     allow $1 eucalyptus_unit_file:file read_file_perms;
     allow $1 eucalyptus_unit_file:service manage_service_perms;
 
     ps_process_pattern($1, eucalyptus_domain)
+
+    init_reload_services($1)
+
+    systemd_exec_systemctl($1)
+    systemd_search_unit_dirs($1)
 ')
 
-## TODO
-#interface(`eucalyptus_admin',`
-#    gen_require(`
-#        type eucalyptus_cloud_t;
-#        type eucalyptus_cluster_t;
-#        type eucalyptus_node_t;
-#        type eucalyptus_eucanetd_t;
-#        type eucalyptus_conf_t;
-#        type eucalyptus_log_t;
-#        type eucalyptus_tmpfs_t;
-#        type eucalyptus_tmp_t;
-#        type eucalyptus_var_lib_t;
-#        type eucalyptus_var_run_t;
-#        type virt_image_t;
-#    ')
+########################################
+## <summary>
+##	Dontaudit reads and writes on leaked file descriptors.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain to not audit.
+##	</summary>
+## </param>
 #
-#    allow $1 eucalyptus_domain:process signal_perms;
-#    ps_process_pattern($1, eucalyptus_domain)
+interface(`eucalyptus_dontaudit_leaks',`
+    gen_require(`
+        type eucalyptus_log_t;
+    ')
+
+    dontaudit $1 eucalyptus_log_t:file { read write };
+')
+
+#######################################
+## <summary>
+##	All of the rules required to
+##	administrate a eucalyptus environment.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+## <rolecap/>
 #
-#    tunable_policy(`deny_ptrace',`',`
-#        allow $1 eucalyptus_domain:process ptrace;
-#    ')
-#    files_search_etc($1)
-#    admin_pattern($1, eucalyptus_conf_t)
-#
-#    logging_search_logs($1)
-#    admin_pattern($1, eucalyptus_log_t)
-#
-#    files_list_tmp($1)
-#    admin_pattern($1, eucalyptus_tmp_t)
-#
-#    fs_list_tmpfs($1)
-#    admin_pattern($1, eucalyptus_tmpfs_t)
-#
-#    files_search_var_lib($1)
-#    admin_pattern($1, eucalyptus_var_lib_t)
-#
-#    files_list_pids($1)
-#    admin_pattern($1, eucalyptus_var_run_t)
-#
-#    eucalyptus_systemctl($1)
-#    admin_pattern($1, eucalyptus_unit_file)
-#    allow $1 eucalyptus_unit_file:service all_service_perms;
-#')
+interface(`eucalyptus_admin',`
+    gen_require(`
+        attribute eucalyptus_domain;
+        type eucalyptus_conf_t;
+        type eucalyptus_log_t;
+        type eucalyptus_tmpfs_t;
+        type eucalyptus_tmp_t;
+        type eucalyptus_var_lib_t;
+        type eucalyptus_var_run_t;
+    ')
+
+    allow $1 eucalyptus_domain:process signal_perms;
+
+    ps_process_pattern($1, eucalyptus_domain)
+
+    files_search_etc($1)
+    admin_pattern($1, eucalyptus_conf_t)
+
+    logging_search_logs($1)
+    admin_pattern($1, eucalyptus_log_t)
+
+    files_list_tmp($1)
+    admin_pattern($1, eucalyptus_tmp_t)
+
+    fs_list_tmpfs($1)
+    admin_pattern($1, eucalyptus_tmpfs_t)
+
+    files_search_var_lib($1)
+    admin_pattern($1, eucalyptus_var_lib_t)
+
+    files_list_pids($1)
+    admin_pattern($1, eucalyptus_var_run_t)
+
+    eucalyptus_systemctl($1)
+    admin_pattern($1, eucalyptus_unit_file)
+    allow $1 eucalyptus_unit_file:service all_service_perms;
+
+    tunable_policy(`deny_ptrace',`',`
+        allow $1 eucalyptus_domain:process ptrace;
+    ')
+')

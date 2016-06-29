@@ -22,7 +22,7 @@ include /usr/share/selinux/devel/Makefile
 all: eucalyptus.pp
 
 eucalyptus.if: eucalyptus.te eucalyptus.if.m4 eucalyptus.if.in
-	@echo "#" > $@
+	rm -f $@
 	@echo "# This is a generated file!  Instead of modifying this file, the" >> $@
 	@echo "# $(notdir $@).in or $(notdir $@).m4 file should be modified." >> $@
 	@echo "#" >> $@

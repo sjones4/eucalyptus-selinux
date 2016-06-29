@@ -24,12 +24,66 @@ define(`eucalyptus_domain_template',``
 ##	</summary>
 ## </param>
 #
-interface(`eucalyptus_$1_domtrans',`
+interface(`eucalyptus_domtrans_$1',`
     gen_require(`
         type eucalyptus_$1_t, eucalyptus_$1_exec_t;
     ')
 
     domtrans_pattern(dollarsone, eucalyptus_$1_exec_t, eucalyptus_$1_t)
+')
+
+########################################
+## <summary>
+##	Send generic signals to eucalyptus_$1 processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_signal_$1',`
+    gen_require(`
+        type eucalyptus_$1_t;
+    ')
+
+    allow dollarsone eucalyptus_$1_t:process signal;
+')
+
+########################################
+## <summary>
+##	Send a null signal to eucalyptus_$1 processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_signull_$1',`
+    gen_require(`
+        type eucalyptus_$1_t;
+    ')
+
+    allow dollarsone eucalyptus_$1_t:process signull;
+')
+
+########################################
+## <summary>
+##	Send SIGKILL to eucalyptus_$1 processes.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`eucalyptus_kill_$1',`
+    gen_require(`
+        type eucalyptus_$1_t;
+    ')
+
+    allow dollarsone eucalyptus_$1_t:process sigkill;
 ')
 
 ########################################
@@ -42,18 +96,21 @@ interface(`eucalyptus_$1_domtrans',`
 ##	</summary>
 ## </param>
 #
-interface(`eucalyptus_$1_systemctl',`
+interface(`eucalyptus_systemctl_$1',`
     gen_require(`
         type eucalyptus_$1_unit_file_t;
         type eucalyptus_$1_t;
     ')
 
-    systemd_exec_systemctl(dollarsone)
-    init_reload_services(dollarsone)
-    systemd_search_unit_dirs(dollarsone)
     allow dollarsone eucalyptus_$1_unit_file_t:file read_file_perms;
     allow dollarsone eucalyptus_$1_unit_file_t:service manage_service_perms;
 
     ps_process_pattern(dollarsone, eucalyptus_$1_t)
+
+    init_reload_services(dollarsone)
+
+    systemd_exec_systemctl(dollarsone)
+    systemd_search_unit_dirs(dollarsone)
+
 ')
 '')
