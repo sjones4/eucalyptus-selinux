@@ -333,6 +333,7 @@ corenet_tcp_connect_generic_port(eucalyptus_node_t)
 corenet_tcp_bind_generic_node(eucalyptus_node_t)
 corenet_tcp_bind_neutron_port(eucalyptus_node_t)  # port 8775
 corenet_tcp_connect_neutron_port(eucalyptus_node_t)  # port 8775, for migration
+corenet_tcp_connect_virt_port(eucalyptus_node_t)  # for migration
 
 dev_read_generic_blk_files(eucalyptus_node_t)  # bundle-instance
 dev_read_rand(eucalyptus_node_t)  # mkswap UUID generation
