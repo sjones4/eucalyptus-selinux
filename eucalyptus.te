@@ -414,6 +414,7 @@ optional_policy(`
     filetrans_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, virt_image_t, dir, "instances")
     read_files_pattern(virsh_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12432
 
+    read_fifo_files_pattern(virsh_t, device_t, eucalyptus_node_t)  # connect_iscsitarget_main.pl reads /dev/stdin for ceph
     domtrans_pattern(eucalyptus_node_t, virsh_exec_t, virsh_t)  # connect_iscsitarget_main.pl for ceph
 
     eucalyptus_dontaudit_leaks(virsh_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12393
