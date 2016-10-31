@@ -75,10 +75,10 @@ fi
 * Thu Jun 16 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.9-1
 - Version bump (0.1.9)
 
-* Wed Jun  9 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.8-1
+* Thu Jun  9 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.8-1
 - Version bump (0.1.8)
 
-* Wed Jun  9 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.7-1
+* Thu Jun  9 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.7-1
 - Version bump (0.1.7)
 
 * Wed Jun  8 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.6-1
