@@ -1,5 +1,5 @@
 Name:           eucalyptus-selinux
-Version:        0.1.14
+Version:        0.1.15
 Release:        1%{?dist}
 Summary:        SELinux policy for eucalyptus
 
@@ -55,6 +55,9 @@ fi
 
 
 %changelog
+* Mon Oct 31 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.15-1
+- Version bump (0.1.15)
+
 * Wed Oct 26 2016 Garrett Holmstrom <gholms@hpe.com> - 0.1.14-1
 - Version bump (0.1.14)
 - Moved policy to /usr/share/selinux/packages
