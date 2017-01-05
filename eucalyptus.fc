@@ -1,4 +1,4 @@
-# Copyright (c) 2016 Hewlett Packard Enterprise Development LP
+# Copyright (c) 2017 Hewlett Packard Enterprise Development LP
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -25,6 +25,8 @@
 /usr/lib/systemd/system/eucalyptus-cluster.service -- gen_context(system_u:object_r:eucalyptus_cluster_unit_file_t,s0)
 /usr/lib/systemd/system/eucalyptus-node.service    -- gen_context(system_u:object_r:eucalyptus_node_unit_file_t,s0)
 /usr/lib/systemd/system/eucanetd.service           -- gen_context(system_u:object_r:eucalyptus_eucanetd_unit_file_t,s0)
+/usr/lib/systemd/system/eucanetd-dhcpd@.service    -- gen_context(system_u:object_r:dhcpd_unit_file_t,s0)
+/usr/lib/systemd/system/eucanetd-nginx.service     -- gen_context(system_u:object_r:httpd_unit_file_t,s0)
 /usr/sbin/eucalyptus-cloud                         -- gen_context(system_u:object_r:eucalyptus_cloud_exec_t,s0)
 /usr/sbin/eucalyptus-cluster                       -- gen_context(system_u:object_r:eucalyptus_cluster_exec_t,s0)
 /usr/sbin/eucalyptus-node                          -- gen_context(system_u:object_r:eucalyptus_node_exec_t,s0)
