@@ -464,6 +464,7 @@ corecmd_exec_bin(eucalyptus_eucanetd_t)
 corenet_udp_bind_generic_node(eucalyptus_eucanetd_t)
 corenet_udp_bind_generic_port(eucalyptus_eucanetd_t)
 corenet_tcp_connect_http_cache_port(eucalyptus_eucanetd_t)  # port 8080, midonet-api
+corenet_tcp_connect_intermapper_port(eucalyptus_eucanetd_t) # port 8181, midonet-api
 
 dev_read_sysfs(eucalyptus_eucanetd_t)
 
