@@ -454,6 +454,7 @@ files_pid_filetrans(eucalyptus_eucanetd_t, eucalyptus_var_run_t, file)
 manage_files_pattern(eucalyptus_eucanetd_t, eucalyptus_tmp_t, eucalyptus_tmp_t)
 files_tmp_filetrans(eucalyptus_eucanetd_t, eucalyptus_tmp_t, { dir file })
 
+kernel_read_net_sysctls(eucalyptus_eucanetd_t)  # warn on wrong sysctl values
 kernel_read_network_state(eucalyptus_eucanetd_t)  # vconfig in managed mode
 kernel_read_system_state(eucalyptus_eucanetd_t)
 
