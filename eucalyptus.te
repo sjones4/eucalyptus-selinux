@@ -479,8 +479,6 @@ optional_policy(`
     delete_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
     rw_files_pattern(httpd_t, eucalyptus_var_run_t, eucalyptus_var_run_t)  # nginx PID files
 
-    apache_domtrans(eucalyptus_eucanetd_t)  # VPC metadata global process
-    apache_signal(eucalyptus_eucanetd_t)  # VPC metadata
     apache_systemctl(eucalyptus_eucanetd_t)
 
     eucalyptus_dontaudit_leaks(httpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
@@ -508,7 +506,6 @@ optional_policy(`
     manage_files_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t)
     filetrans_pattern(eucalyptus_eucanetd_t, dhcpd_state_t, dhcp_etc_t, file, "euca-dhcp.conf")
 
-    dhcpd_domtrans(eucalyptus_eucanetd_t)
     dhcpd_systemctl(eucalyptus_eucanetd_t)
 
     eucalyptus_dontaudit_leaks(dhcpd_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
