@@ -391,6 +391,7 @@ optional_policy(`
     ')
 
     read_files_pattern(eucalyptus_node_t, dhcpd_state_t, dhcp_etc_t)  # Edge NC gates instance launches on dhcp config
+    read_files_pattern(eucalyptus_node_t, dhcpd_state_t, dhcpd_state_t)  # allow NC to access external net stats (eucanetd_getstats_net.out)
 ')
 
 optional_policy(`
