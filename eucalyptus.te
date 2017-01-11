@@ -131,6 +131,7 @@ corenet_tcp_connect_echo_port(eucalyptus_cloud_t)  # InetAddress.isReachable fal
 corenet_tcp_bind_dns_port(eucalyptus_cloud_t)
 corenet_udp_bind_dns_port(eucalyptus_cloud_t)
 corenet_tcp_connect_http_port(eucalyptus_cloud_t)  # for riak
+corenet_tcp_connect_ldap_port(eucalyptus_cloud_t)
 corenet_tcp_connect_osapi_compute_port(eucalyptus_cloud_t)  # port 8774
 
 dev_read_rand(eucalyptus_cloud_t)
