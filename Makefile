@@ -31,7 +31,7 @@ eucalyptus.if: eucalyptus.te eucalyptus.if.m4 eucalyptus.if.in
 		| sed -e 's/dollarszero/\$$0/' -e 's/dollarsone/\$$1/' >> $@
 
 relabel:
-	restorecon -Riv /etc/eucalyptus /usr/lib/eucalyptus /usr/sbin/euca* /usr/share/eucalyptus /var/lib/eucalyptus /var/log/eucalyptus /var/run/eucalyptus
+	restorecon -Riv /etc/eucalyptus /usr/lib/eucalyptus /usr/lib/systemd/system/euca* /usr/sbin/euca* /usr/share/eucalyptus /var/lib/eucalyptus /var/log/eucalyptus /var/run/eucalyptus
 
 distdir: Makefile COPYING TODO eucalyptus.te eucalyptus.fc eucalyptus.if.m4 eucalyptus.if.in eucalyptus-selinux.spec
 	rm -rf $(distdir)
