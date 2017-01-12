@@ -436,6 +436,7 @@ optional_policy(`
 allow eucalyptus_eucanetd_t self:capability { setgid setuid };
 allow eucalyptus_eucanetd_t self:capability net_admin;  # vconfig in managed mode
 allow eucalyptus_eucanetd_t self:capability sys_admin;  # nsenter in VPCMIDO mode
+dontaudit eucalyptus_eucanetd_t self:capability sys_resource;  # https://bugzilla.redhat.com/show_bug.cgi?id=1184712#c38
 
 allow eucalyptus_eucanetd_t self:process { fork setpgid signal_perms };
 
