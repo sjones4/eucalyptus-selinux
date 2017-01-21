@@ -46,9 +46,9 @@ attribute eucalyptus_unit_file;
 
 eucalyptus_domain_template(cloud)
 typeattribute eucalyptus_cloud_t fixed_disk_raw_read;  # storage controller
+typeattribute eucalyptus_cloud_t fixed_disk_raw_write;  # storage controller
 
 eucalyptus_domain_template(cluster)
-typeattribute eucalyptus_cloud_t fixed_disk_raw_write;  # storage controller
 
 eucalyptus_domain_template(node)
 typeattribute eucalyptus_node_t fixed_disk_raw_read;  # for mkswap:  https://eucalyptus.atlassian.net/browse/EUCA-12492
@@ -299,7 +299,6 @@ allow eucalyptus_node_t self:unix_stream_socket create_stream_socket_perms;
 
 ps_process_pattern(eucalyptus_node_t, eucalyptus_eucanetd_t)
 
-append_files_pattern(eucalyptus_node_t, etc_t, bin_t)  # https://bugzilla.redhat.com/show_bug.cgi?id=1351382
 append_files_pattern(eucalyptus_node_t, etc_t, etc_t)  # adding --listen in /etc/sysconfig/libvirtd
 
 list_dirs_pattern(eucalyptus_node_t, eucalyptus_conf_t, eucalyptus_conf_t)
@@ -415,7 +414,6 @@ optional_policy(`
     manage_lnk_files_pattern(eucalyptus_node_t, virt_image_t, virt_image_t)
 
     filetrans_pattern(eucalyptus_node_t, eucalyptus_var_lib_t, virt_image_t, dir, "instances")
-    read_files_pattern(virsh_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12432
 
     read_fifo_files_pattern(virsh_t, device_t, eucalyptus_node_t)  # connect_iscsitarget_main.pl reads /dev/stdin for ceph
     domtrans_pattern(eucalyptus_node_t, virsh_exec_t, virsh_t)  # connect_iscsitarget_main.pl for ceph
@@ -534,12 +532,7 @@ optional_policy(`
 optional_policy(`
     gen_require(`
         type ifconfig_t;
-        type ifconfig_var_run_t;
     ')
-
-    allow ifconfig_t ifconfig_var_run_t:dir mounton;  # https://bugzilla.redhat.com/show_bug.cgi?id=1340572
-
-    kernel_unmount_proc(ifconfig_t)  # https://bugzilla.redhat.com/show_bug.cgi?id=1343776
 
     sysnet_domtrans_ifconfig(eucalyptus_eucanetd_t)  # ifconfig, ip
 
