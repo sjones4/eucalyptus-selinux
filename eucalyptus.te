@@ -545,3 +545,19 @@ optional_policy(`
 
     eucalyptus_dontaudit_leaks(ifconfig_t)  # https://eucalyptus.atlassian.net/browse/EUCA-12084
 ')
+
+optional_policy(`
+  gen_require(`
+    type virtd_t;
+    type virtlogd_t;
+    type virt_image_t;
+    type virt_log_t;
+  ')
+
+  # libvirtd creates console.log, then virtlogd opens it
+  filetrans_pattern(virtd_t, virt_image_t, virt_log_t, file, "console.log")
+
+  search_dirs_pattern(virtlogd_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
+
+  append_files_pattern(virtlogd_t, virt_image_t, virt_log_t)
+')

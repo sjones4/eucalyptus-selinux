@@ -37,6 +37,7 @@
 # file names are not fixed, preventing us from creating file name-based
 # type transitions for them.
 /var/lib/eucalyptus/instances(/.*)?                   gen_context(system_u:object_r:virt_image_t,s0)
+/var/lib/eucalyptus/instances/.*/console.log          gen_context(system_u:object_r:virt_log_t,s0)
 
 /var/log/eucalyptus(/.*)?                             gen_context(system_u:object_r:eucalyptus_log_t,s0)
 /var/run/eucalyptus(/.*)?                             gen_context(system_u:object_r:eucalyptus_var_run_t,s0)
