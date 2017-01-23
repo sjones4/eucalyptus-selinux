@@ -550,6 +550,10 @@ optional_policy(`
   # libvirtd creates console.log, then virtlogd opens it
   filetrans_pattern(virtd_t, virt_image_t, virt_log_t, file, "console.log")
 
+  # allow NC to unlink and rename console.log (EUCA-13138 related fix)
+  delete_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
+  rename_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
+
   search_dirs_pattern(virtlogd_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
 
   append_files_pattern(virtlogd_t, virt_image_t, virt_log_t)
