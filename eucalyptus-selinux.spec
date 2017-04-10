@@ -45,6 +45,9 @@ install -Dp -m 0644 eucalyptus.pp $RPM_BUILD_ROOT%{_datadir}/selinux/packages/eu
 %post
 if /usr/sbin/selinuxenabled; then
     /usr/sbin/semodule -i %{_datadir}/selinux/packages/eucalyptus.pp >/dev/null || :
+    if [ -e /etc/eucalyptus/nc-hooks ]; then
+        /usr/sbin/restorecon /etc/eucalyptus/nc-hooks || :
+    fi
 fi
 
 
