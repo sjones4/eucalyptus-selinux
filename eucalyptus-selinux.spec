@@ -45,6 +45,9 @@ install -Dp -m 0644 eucalyptus.pp $RPM_BUILD_ROOT%{_datadir}/selinux/packages/eu
 %post
 if /usr/sbin/selinuxenabled; then
     /usr/sbin/semodule -i %{_datadir}/selinux/packages/eucalyptus.pp >/dev/null || :
+    if [ -e /etc/eucalyptus/nc-hooks ]; then
+        /usr/sbin/restorecon /etc/eucalyptus/nc-hooks || :
+    fi
 fi
 
 
@@ -55,6 +58,9 @@ fi
 
 
 %changelog
+* Mon Apr 10 2017 Garrett Holmstrom <gholms@dxc.com> - 0.1.19-1
+- Version bump (0.1.19)
+
 * Mon Jan 23 2017 Matt Bacchi <mbacchi@hpe.com> - 0.2.2-1
 - Version bump (0.2.2)
 

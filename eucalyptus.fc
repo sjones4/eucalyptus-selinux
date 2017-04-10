@@ -14,7 +14,7 @@
 
 /dev/shm/sem\.eucalyptus.*                         -- gen_context(system_u:object_r:eucalyptus_tmpfs_t,s0)
 /etc/eucalyptus(/.*)?                                 gen_context(system_u:object_r:eucalyptus_conf_t,s0)
-/etc/eucalyptus/nc-hooks(/.*)?                     -- gen_context(system_u:object_r:bin_t,s0)
+/etc/eucalyptus/nc-hooks(/.*)?                        gen_context(system_u:object_r:bin_t,s0)
 /tmp/ebt_filter_file-.*                            -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /tmp/ebt_nat_file-.*                               -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
 /tmp/euca-global-net-.*                            -- gen_context(system_u:object_r:eucalyptus_tmp_t,s0)
