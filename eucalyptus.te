@@ -12,7 +12,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
 # OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-policy_module(eucalyptus, 0.2.3)
+policy_module(eucalyptus, 0.2.4)
 
 gen_require(`
     attribute fixed_disk_raw_read;
@@ -547,12 +547,15 @@ optional_policy(`
     type virt_log_t;
   ')
 
-  # libvirtd creates console.log, then virtlogd opens it
+  allow virtlogd_t self:capability { dac_override };
   filetrans_pattern(virtd_t, virt_image_t, virt_log_t, file, "console.log")
+  filetrans_pattern(virtlogd_t, virt_image_t, virt_log_t, file, "console.log")
 
   # allow NC to unlink and rename console.log (EUCA-13138 related fix)
   delete_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
   rename_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
+  read_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
+  setattr_files_pattern(eucalyptus_node_t, virt_image_t, virt_log_t)
 
   search_dirs_pattern(virtlogd_t, eucalyptus_var_lib_t, eucalyptus_var_lib_t)
 
