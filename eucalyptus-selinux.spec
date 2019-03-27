@@ -1,5 +1,5 @@
 Name:           eucalyptus-selinux
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?dist}
 Summary:        SELinux policy for eucalyptus
 
@@ -58,6 +58,9 @@ fi
 
 
 %changelog
+* Wed Mar 27 2019 Steve Jones <steve.jones@appscale.com> - 0.2.5-1
+- Version bump (0.2.5)
+
 * Fri Jul  6 2018 Steve Jones <steve.jones@appscale.com> - 0.2.4-1
 - Version bump (0.2.4)
 
