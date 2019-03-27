@@ -17,6 +17,7 @@ policy_module(eucalyptus, 0.2.4)
 gen_require(`
     attribute fixed_disk_raw_read;
     attribute fixed_disk_raw_write;
+    type cgroup_t;
     type device_t;
     type fixed_disk_device_t;
     type tmp_t;
@@ -90,6 +91,9 @@ allow eucalyptus_cloud_t self:rawip_socket create_socket_perms;
 allow eucalyptus_cloud_t self:tcp_socket create_stream_socket_perms;
 allow eucalyptus_cloud_t self:udp_socket create_socket_perms;
 allow eucalyptus_cloud_t self:unix_stream_socket connectto;  # pg_ctl
+
+list_dirs_pattern(eucalyptus_cloud_t, cgroup_t, cgroup_t)
+read_files_pattern(eucalyptus_cloud_t, cgroup_t, cgroup_t)
 
 list_dirs_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
 read_files_pattern(eucalyptus_cloud_t, eucalyptus_conf_t, eucalyptus_conf_t)
