@@ -37,7 +37,6 @@ install -Dp -m 0644 eucalyptus.pp $RPM_BUILD_ROOT%{_datadir}/selinux/packages/eu
 
 %files
 %license COPYING
-%doc TODO
 %{_datadir}/selinux/devel/include/contrib/eucalyptus.if
 %{_datadir}/selinux/packages/eucalyptus.pp
 

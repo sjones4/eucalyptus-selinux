@@ -24,7 +24,7 @@ eucalyptus.if: eucalyptus.te eucalyptus.if.m4 eucalyptus.if.in
 relabel:
 	restorecon -Riv /etc/eucalyptus /usr/lib/eucalyptus /usr/lib/systemd/system/euca* /usr/sbin/euca* /usr/share/eucalyptus /var/lib/eucalyptus /var/log/eucalyptus /var/run/eucalyptus
 
-distdir: Makefile COPYING TODO eucalyptus.te eucalyptus.fc eucalyptus.if.m4 eucalyptus.if.in eucalyptus-selinux.spec
+distdir: Makefile COPYING eucalyptus.te eucalyptus.fc eucalyptus.if.m4 eucalyptus.if.in eucalyptus-selinux.spec
 	rm -rf $(distdir)
 	mkdir -p $(distdir)
 	cp -pR $^ $(distdir)
