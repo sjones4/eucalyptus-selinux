@@ -1,16 +1,7 @@
-dnl Copyright (c) 2016 Hewlett Packard Enterprise Development LP
+dnl Copyright 2018-2019 AppScale Systems, Inc
+dnl Portions copyright 2016-2017 Ent. Services Development Corporation LP
 dnl
-dnl Permission to use, copy, modify, and/or distribute this software for
-dnl any purpose with or without fee is hereby granted, provided that the
-dnl above copyright notice and this permission notice appear in all copies.
-dnl
-dnl THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-dnl WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-dnl MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-dnl ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-dnl WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-dnl ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
-dnl OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+dnl SPDX-License-Identifier: BSD-2-Clause
 
 define(`eucalyptus_domain_template',``
 ########################################
